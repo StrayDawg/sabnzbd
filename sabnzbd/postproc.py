@@ -63,6 +63,7 @@ from sabnzbd.filesystem import (
     get_ext,
     get_filename,
 )
+from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.sorting import Sorter
 from sabnzbd.constants import (
     REPAIR_PRIORITY,
@@ -105,14 +106,14 @@ class PostProcessor(Thread):
         Thread.__init__(self)
 
         # This history queue is simply used to log what active items to display in the web_ui
-        self.history_queue: List[sabnzbd.nzbstuff.NzbObject] = []
+        self.history_queue: List[NzbObject] = []
         self.load()
 
         # Fast-queue for jobs already finished by DirectUnpack
-        self.fast_queue: queue.Queue[sabnzbd.nzbstuff.NzbObject] = queue.Queue()
+        self.fast_queue: queue.Queue[NzbObject] = queue.Queue()
 
         # Regular queue for jobs that might need more attention
-        self.slow_queue: queue.Queue[sabnzbd.nzbstuff.NzbObject] = queue.Queue()
+        self.slow_queue: queue.Queue[NzbObject] = queue.Queue()
 
         # Load all old jobs
         for nzo in self.history_queue:
@@ -160,7 +161,7 @@ class PostProcessor(Thread):
                     nzo.work_name = ""  # Mark as deleted job
                 break
 
-    def process(self, nzo: sabnzbd.nzbstuff.NzbObject):
+    def process(self, nzo: NzbObject):
         """ Push on finished job in the queue """
         if nzo not in self.history_queue:
             self.history_queue.append(nzo)

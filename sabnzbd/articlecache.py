@@ -27,6 +27,7 @@ from typing import Dict
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import GIGI, ANFO, MEBI, LIMIT_DECODE_QUEUE, MIN_DECODE_QUEUE
+from sabnzbd.nzbstuff import Article
 
 # Operations on the article table are handled via try/except.
 # The counters need to be made atomic to ensure consistency.
@@ -40,7 +41,7 @@ class ArticleCache:
         self.__cache_limit_org = 0
         self.__cache_limit = 0
         self.__cache_size = 0
-        self.__article_table: Dict[sabnzbd.nzbstuff.Article, bytes] = {}  # Dict of buffered articles
+        self.__article_table: Dict[Article, bytes] = {}  # Dict of buffered articles
 
         # Limit for the decoder is based on the total available cache
         # so it can be larger on memory-rich systems

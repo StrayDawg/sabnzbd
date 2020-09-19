@@ -15,9 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# Imported to be referenced from other files directly
-from sabnzbd.version import __version__, __baseline__
-
 import os
 import logging
 import datetime
@@ -73,6 +70,9 @@ elif os.name == "posix":
             FOUNDATION = True
         except:
             pass
+
+# Imported to be referenced from other files directly
+from sabnzbd.version import __version__, __baseline__
 
 # Now we can import safely
 import sabnzbd.misc as misc

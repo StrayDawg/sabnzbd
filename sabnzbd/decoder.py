@@ -26,9 +26,9 @@ from threading import Thread
 from typing import Tuple, List
 
 import sabnzbd
+import sabnzbd.cfg as cfg
 from sabnzbd.constants import SABYENC_VERSION_REQUIRED
 from sabnzbd.nzbstuff import Article
-import sabnzbd.cfg as cfg
 from sabnzbd.misc import match_str
 
 # Check for correct SABYenc version

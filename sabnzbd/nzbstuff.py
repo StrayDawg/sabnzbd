@@ -84,6 +84,7 @@ from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbparser
+from sabnzbd.downloader import Server
 from sabnzbd.database import HistoryDB
 
 # Name patterns
@@ -107,15 +108,15 @@ class TryList:
     __slots__ = ("try_list", "fetcher_priority")
 
     def __init__(self):
-        self.try_list: List[sabnzbd.downloader.Server] = []
-        self.fetcher_priority = 0
+        self.try_list: List[Server] = []
+        self.fetcher_priority: int = 0
 
-    def server_in_try_list(self, server: sabnzbd.downloader.Server):
+    def server_in_try_list(self, server: Server):
         """ Return whether specified server has been tried """
         with TRYLIST_LOCK:
             return server in self.try_list
 
-    def add_to_try_list(self, server):
+    def add_to_try_list(self, server: Server):
         """ Register server as having been tried already """
         with TRYLIST_LOCK:
             if server not in self.try_list:
@@ -130,7 +131,7 @@ class TryList:
         """ Save the servers """
         return [server.id for server in self.try_list]
 
-    def __setstate__(self, servers_ids):
+    def __setstate__(self, servers_ids: List[str]):
         self.try_list = []
         for server_id in servers_ids:
             if server_id in sabnzbd.Downloader.server_dict:
@@ -151,7 +152,7 @@ class Article(TryList):
 
     def __init__(self, article, article_bytes, nzf):
         TryList.__init__(self)
-        self.fetcher: Union[sabnzbd.downloader.Server, None] = None
+        self.fetcher: Union[Server, None] = None
         self.article: str = article
         self.art_id = None
         self.bytes = article_bytes
@@ -161,7 +162,7 @@ class Article(TryList):
         self.on_disk = False
         self.nzf: NzbFile = nzf
 
-    def get_article(self, server, servers):
+    def get_article(self, server: Server, servers: List[Server]):
         """ Return article when appropriate for specified server """
         log = sabnzbd.LOG_ALL
         if not self.fetcher and not self.server_in_try_list(server):
@@ -634,9 +635,7 @@ class NzbObject(TryList):
         self.meta = {}
         self.servercount = {}  # Dict to keep bytes per server
         self.created = False  # dirprefixes + work_name created
-        self.direct_unpacker: Union[
-            sabnzbd.directunpacker.DirectUnpacker, None
-        ] = None  # Holds the DirectUnpacker instance
+        self.direct_unpacker = None  # Holds the DirectUnpacker instance
         self.bytes: int = 0  # Original bytesize
         self.bytes_par2: int = 0  # Bytes available for repair
         self.bytes_downloaded: int = 0  # Downloaded byte

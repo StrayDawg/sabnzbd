@@ -28,9 +28,9 @@ import logging
 import ssl
 
 import sabnzbd
-from sabnzbd.constants import *
-from sabnzbd.encoding import utob
 import sabnzbd.cfg
+from sabnzbd.constants import DEF_TIMEOUT
+from sabnzbd.encoding import utob
 from sabnzbd.misc import nntp_to_msg, probablyipv4, probablyipv6
 
 # Set pre-defined socket timeout
@@ -430,16 +430,16 @@ class NewsWrapper:
         # Official end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
         chunk_len = len(chunk)
         if chunk[-5:] == b"\r\n.\r\n":
-            return (chunk_len, True, False)
+            return chunk_len, True, False
         elif chunk_len < 5 and len(self.data) > 1:
             # We need to make sure the end is not split over 2 chunks
             # This is faster than join()
             combine_chunk = self.data[-2][-5:] + chunk
             if combine_chunk[-5:] == b"\r\n.\r\n":
-                return (chunk_len, True, False)
+                return chunk_len, True, False
 
         # Still in middle of data, so continue!
-        return (chunk_len, False, False)
+        return chunk_len, False, False
 
     def soft_reset(self):
         self.timeout = None
